@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortex Scenarios & Metrics</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Sora:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #e8e4dc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    padding: 40px 20px 60px;
+  }
+
+  .card {
+    width: 720px;
+    background: #f2efe8;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 40px rgba(0,0,0,0.03);
+  }
+  .card-inner { padding: 44px 48px 40px; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #0055ff;
+    margin-bottom: 4px;
+  }
+  .section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 34px;
+    font-weight: 900;
+    color: #0d1117;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+    line-height: 1.1;
+  }
+  .section-subtitle {
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+
+  /* ========== CARD 1: CRASH SCENARIO ========== */
+  .scenario-trigger {
+    background: #0d1117;
+    border-radius: 16px;
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .trigger-icon {
+    font-size: 40px;
+    flex-shrink: 0;
+  }
+  .trigger-info {}
+  .trigger-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff4d4d;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .trigger-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .trigger-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  /* Timeline */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .tl-item {
+    display: flex;
+    gap: 18px;
+    position: relative;
+  }
+  .tl-left {
+    width: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .tl-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #999;
+    white-space: nowrap;
+  }
+  .tl-line-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 6px 0;
+  }
+  .tl-line {
+    width: 2px;
+    height: 100%;
+    min-height: 12px;
+    border-radius: 1px;
+  }
+  .tl-right {
+    flex: 1;
+    padding-bottom: 16px;
+  }
+  .tl-item:last-child .tl-right { padding-bottom: 0; }
+  .tl-item:last-child .tl-line-wrap { display: none; }
+
+  /* Bot comparison cards */
+  .bot-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .bot-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 2.5px solid;
+  }
+  .bot-card.dead { border-color: #ff4d4d; }
+  .bot-card.hurt { border-color: #e68a00; }
+  .bot-card.ok { border-color: #e68a00; }
+  .bot-card.safe { border-color: #00a86b; }
+
+  .bot-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    font-weight: 800;
+  }
+  .bot-card.dead .bot-avatar { background: rgba(255,77,77,0.08); }
+  .bot-card.hurt .bot-avatar { background: rgba(230,138,0,0.08); }
+  .bot-card.ok .bot-avatar { background: rgba(230,138,0,0.08); }
+  .bot-card.safe .bot-avatar { background: rgba(0,168,107,0.08); }
+
+  .bot-info { flex: 1; }
+  .bot-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0d1117;
+  }
+  .bot-action {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .bot-result {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .bot-pnl {
+    font-family: 'Sora', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+  }
+  .bot-card.dead .bot-pnl { color: #ff4d4d; }
+  .bot-card.hurt .bot-pnl { color: #e68a00; }
+  .bot-card.ok .bot-pnl { color: #e68a00; }
+  .bot-card.safe .bot-pnl { color: #00a86b; }
+  .bot-status {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .bot-card.dead .bot-status { color: #ff4d4d; }
+  .bot-card.hurt .bot-status { color: #e68a00; }
+  .bot-card.ok .bot-status { color: #e68a00; }
+  .bot-card.safe .bot-status { color: #00a86b; }
+
+  /* Cortex timeline detail */
+  .cortex-steps {
+    background: #fff;
+    border: 2.5px solid #00a86b;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-top: 8px;
+  }
+  .cx-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .cx-step:last-child { margin-bottom: 0; }
+  .cx-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00a86b;
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .cx-text {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .cx-text .hl { color: #0055ff; font-weight: 700; }
+  .cx-text strong { color: #0d1117; }
+  .cx-time-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #00a86b;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    background: rgba(0,168,107,0.08);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+
+  /* Lesson box */
+  .lesson-box {
+    background: rgba(0,85,255,0.04);
+    border: 2px solid rgba(0,85,255,0.12);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-top: 20px;
+  }
+  .lesson-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #0055ff;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .lesson-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+  .lesson-text .hl { color: #0055ff; font-weight: 700; }
+
+  /* ========== CARD 2: ON-CHAIN METRICS ========== */
+  .metrics-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .metric-card {
+    background: #fff;
+    border: 2.5px solid #e8e5de;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: border-color 0.2s;
+  }
+  .metric-card:hover { border-color: #0055ff; }
+  
+  .metric-logo-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .metric-logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .metric-info { flex: 1; }
+  .metric-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .metric-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0d1117;
+  }
+  .metric-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(0,85,255,0.06);
+    color: #0055ff;
+  }
+  .metric-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  
+  /* Mini signal bars */
+  .signal-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .signal-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #aaa;
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .signal-bar-track {
+    flex: 1;
+    height: 6px;
+    background: #f0ede6;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .signal-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.5s;
+  }
+  .signal-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    width: 40px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* Metric alert example */
+  .metric-alert {
+    margin-top: 10px;
+    background: rgba(255,77,77,0.04);
+    border: 1.5px solid rgba(255,77,77,0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .metric-alert.warning {
+    background: rgba(230,138,0,0.04);
+    border-color: rgba(230,138,0,0.15);
+  }
+  .metric-alert.good {
+    background: rgba(0,168,107,0.04);
+    border-color: rgba(0,168,107,0.15);
+  }
+  .alert-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .metric-alert .alert-dot { background: #ff4d4d; }
+  .metric-alert.warning .alert-dot { background: #e68a00; }
+  .metric-alert.good .alert-dot { background: #00a86b; }
+  .alert-text {
+    font-size: 11px;
+    font-weight: 600;
+    color: #555;
+  }
+  .alert-text .red { color: #ff4d4d; font-weight: 700; }
+  .alert-text .orange { color: #e68a00; font-weight: 700; }
+  .alert-text .green { color: #00a86b; font-weight: 700; }
+
+  /* ========== CARD 3: ASYMMETRY ========== */
+  .asym-visual {
+    background: #fff;
+    border: 2.5px solid #e8e5de;
+    border-radius: 18px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+  .asym-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    height: 140px;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .asym-climb {
+    flex: 3;
+    height: 100%;
+    position: relative;
+  }
+  .asym-climb-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,168,107,0.08), rgba(0,168,107,0.35));
+    border-radius: 8px 8px 0 0;
+    border: 2px solid rgba(0,168,107,0.3);
+    border-bottom: none;
+    clip-path: polygon(0% 100%, 100% 0%, 100% 100%);
+    height: 100%;
+  }
+  .asym-climb-label {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform: translate(-50%, 50%);
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: #00a86b;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .asym-crash {
+    flex: 1;
+    height: 100%;
+    position: relative;
+  }
+  .asym-crash-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(255,77,77,0.4), rgba(255,77,77,0.1));
+    border-radius: 8px 8px 0 0;
+    border: 2px solid rgba(255,77,77,0.4);
+    border-bottom: none;
+    clip-path: polygon(0% 0%, 100% 100%, 0% 100%);
+    height: 100%;
+  }
+  .asym-crash-label {
+    position: absolute;
+    bottom: 50%;
+    right: 30%;
+    transform: translateY(50%);
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: #ff4d4d;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .asym-legend {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+  }
+  .asym-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .asym-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+  .asym-legend-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+  }
+
+  .asym-signals {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .asym-signal {
+    background: #fff;
+    border: 2px solid #e8e5de;
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .asym-signal-num {
+    font-family: 'Sora', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    color: #ff4d4d;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .asym-signal-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0d1117;
+    margin-bottom: 2px;
+  }
+  .asym-signal-desc {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .card-footer-left {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: #aaa;
+  }
+  .card-footer-right {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: #0d1117;
+    font-weight: 700;
+  }
+
+  /* Progress */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .p-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid #0055ff;
+  }
+  .p-dot.filled { background: #0055ff; border-color: #0055ff; }
+  .p-bar {
+    flex: 1; height: 7px;
+    background: #0055ff;
+    border-radius: 4px;
+  }
+  .p-bar.dim { opacity: 0.15; }
+  .p-bar.med { opacity: 0.5; }
+
+  .cortex-logo {
+    height: 36px;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- =====================================================
+     CARD 1: CRASH SCENARIO — SOL -40% IN 6 HOURS
+     ===================================================== -->
+<div class="card">
+  <div class="card-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <img src="https://res.cloudinary.com/dgvnuwspr/image/upload/v1770416980/earn-sponsor/gekgs3aob9euzgqqr8cg.webp" class="cortex-logo" alt="Cortex">
+      <div class="section-label" style="margin:0;">HYPOTHETICAL SCENARIO</div>
+    </div>
+    
+    <div class="section-title">What Happens When<br>SOL Crashes 40%?</div>
+    <div class="section-subtitle">Comparing 4 systems during a 6-hour flash crash</div>
+
+    <!-- Scenario Trigger -->
+    <div class="scenario-trigger">
+      <div class="trigger-icon">📉</div>
+      <div class="trigger-info">
+        <div class="trigger-label">⚠ CRISIS EVENT TRIGGERED</div>
+        <div class="trigger-title">SOL drops from $180 → $108 in 6 hours</div>
+        <div class="trigger-sub">Cascading liquidations across Solana DeFi protocols</div>
+      </div>
+    </div>
+
+    <!-- Bot Comparison -->
+    <div class="bot-cards">
+      <!-- Jupiter Bot -->
+      <div class="bot-card dead">
+        <div class="bot-avatar">🤖</div>
+        <div class="bot-info">
+          <div class="bot-name">Jupiter Momentum Bot</div>
+          <div class="bot-action">Still running momentum strategy. "Buys the dip" at -15%. Gets liquidated at -35%.</div>
+        </div>
+        <div class="bot-result">
+          <div class="bot-pnl">-100%</div>
+          <div class="bot-status">LIQUIDATED</div>
+        </div>
+      </div>
+      <!-- Drift Vault -->
+      <div class="bot-card hurt">
+        <div class="bot-avatar">🏦</div>
+        <div class="bot-info">
+          <div class="bot-name">Drift Strategy Vault</div>
+          <div class="bot-action">Manager is asleep (different timezone). Vault keeps running old algo. Manual intervention after -25%.</div>
+        </div>
+        <div class="bot-result">
+          <div class="bot-pnl">-25%</div>
+          <div class="bot-status">LATE RESPONSE</div>
+        </div>
+      </div>
+      <!-- Kamino LP -->
+      <div class="bot-card ok">
+        <div class="bot-avatar">💧</div>
+        <div class="bot-info">
+          <div class="bot-name">Kamino LP Vault</div>
+          <div class="bot-action">Auto-rebalances LP positions, but eats massive impermanent loss. Capital preserved, value lost.</div>
+        </div>
+        <div class="bot-result">
+          <div class="bot-pnl">-20%</div>
+          <div class="bot-status">IL DAMAGE</div>
+        </div>
+      </div>
+      <!-- Cortex -->
+      <div class="bot-card safe">
+        <div class="bot-avatar">◆</div>
+        <div class="bot-info">
+          <div class="bot-name">Cortex Agent</div>
+          <div class="bot-action">MRS detects regime shift in 15 min. Auto-reallocates. Defensive positioning activated.</div>
+        </div>
+        <div class="bot-result">
+          <div class="bot-pnl">-7%</div>
+          <div class="bot-status">PROTECTED</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cortex Detailed Timeline -->
+    <div class="cortex-steps" style="margin-top: 20px;">
+      <div style="font-family:'Sora',sans-serif;font-size:14px;font-weight:800;color:#00a86b;margin-bottom:14px;">◆ HOW CORTEX RESPONDED</div>
+      <div class="cx-step">
+        <div class="cx-dot"></div>
+        <div class="cx-text">
+          <span class="cx-time-label">T+5 min</span>
+          Funding rates on Drift spike to <span class="hl">+0.15%/hr</span> — overleveraged longs detected
+        </div>
+      </div>
+      <div class="cx-step">
+        <div class="cx-dot"></div>
+        <div class="cx-text">
+          <span class="cx-time-label">T+8 min</span>
+          Raydium/Orca liquidity depth <span class="hl">thins by 40%</span> — MMs pulling bids
+        </div>
+      </div>
+      <div class="cx-step">
+        <div class="cx-dot"></div>
+        <div class="cx-text">
+          <span class="cx-time-label">T+12 min</span>
+          Cross-protocol correlation surges to <span class="hl">0.94</span> — everything moving together
+        </div>
+      </div>
+      <div class="cx-step">
+        <div class="cx-dot"></div>
+        <div class="cx-text">
+          <span class="cx-time-label">T+15 min</span>
+          MRS declares <strong>73% probability of crisis regime</strong>. Orchestrator activates defense:
+        </div>
+      </div>
+      <div class="cx-step">
+        <div class="cx-dot" style="background:#0055ff;"></div>
+        <div class="cx-text">
+          Momentum allocation: <span class="hl">40% → 5%</span> · Arbitrage allocation: <span class="hl">15% → 60%</span> · Risk limits: <span class="hl">tightened 3x</span> · Position sizes: <span class="hl">halved</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-box">
+      <div class="lesson-title">◆ KEY INSIGHT</div>
+      <div class="lesson-text">
+        By the time SOL dropped 5%, Cortex had already detected the regime shift and begun defensive positioning. The other bots were still operating under <span class="hl">markup-era assumptions</span>. That's the difference between <span class="hl">proactive (probabilistic)</span> and reactive (threshold-based) detection.
+      </div>
+    </div>
+
+    <div class="progress">
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar dim"></div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-left">Hypothetical scenario for illustration</span>
+      <span class="card-footer-right">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     CARD 2: ON-CHAIN METRICS DASHBOARD
+     ===================================================== -->
+<div class="card">
+  <div class="card-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <img src="https://res.cloudinary.com/dgvnuwspr/image/upload/v1770416980/earn-sponsor/gekgs3aob9euzgqqr8cg.webp" class="cortex-logo" alt="Cortex">
+      <div class="section-label" style="margin:0;">ON-CHAIN INTELLIGENCE</div>
+    </div>
+
+    <div class="section-title">What Cortex<br>Monitors 24/7</div>
+    <div class="section-subtitle">6 on-chain data streams fused into a single probabilistic picture</div>
+
+    <div class="metrics-grid">
+      <!-- PYTH -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/1948404937857122304/XPBCFnR5_400x400.jpg" alt="Pyth">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Pyth Oracle</div>
+            <div class="metric-badge">PRICE FEEDS</div>
+          </div>
+          <div class="metric-desc">Sub-second price data across 350+ assets. Cortex uses confidence intervals, not just spot price — wider intervals signal uncertainty.</div>
+          <div class="signal-row">
+            <div class="signal-label">Confidence</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:85%; background: #00a86b;"></div>
+            </div>
+            <div class="signal-value" style="color:#00a86b;">HIGH</div>
+          </div>
+          <div class="signal-row" style="margin-top:6px;">
+            <div class="signal-label">Latency</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:15%; background: #00a86b;"></div>
+            </div>
+            <div class="signal-value" style="color:#00a86b;">&lt;400ms</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAYDIUM / ORCA -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/1965997401015267328/28CKEI7e_400x400.jpg" alt="Raydium">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Raydium / Orca</div>
+            <div class="metric-badge">LIQUIDITY DEPTH</div>
+          </div>
+          <div class="metric-desc">Monitors order book thickness in real-time. Thinning liquidity = market makers pulling bids = early crash warning.</div>
+          <div class="signal-row">
+            <div class="signal-label">Bid Depth</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:35%; background: #e68a00;"></div>
+            </div>
+            <div class="signal-value" style="color:#e68a00;">THIN</div>
+          </div>
+          <div class="signal-row" style="margin-top:6px;">
+            <div class="signal-label">Ask Depth</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:65%; background: #00a86b;"></div>
+            </div>
+            <div class="signal-value" style="color:#00a86b;">NORMAL</div>
+          </div>
+          <div class="metric-alert warning" style="margin-top:10px;">
+            <div class="alert-dot"></div>
+            <div class="alert-text"><span class="orange">WARNING:</span> Bid depth dropped 40% in 10min — MMs exiting</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DRIFT / ZETA -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/1996562092879663104/5W5GGU9U_400x400.png" alt="Drift">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Drift / Zeta</div>
+            <div class="metric-badge">FUNDING RATES</div>
+          </div>
+          <div class="metric-desc">Tracks perpetual funding rates. When everyone is leveraged long, funding spikes — indicating crowded positioning and impending reversal.</div>
+          <div class="signal-row">
+            <div class="signal-label">SOL Perp</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:90%; background: #ff4d4d;"></div>
+            </div>
+            <div class="signal-value" style="color:#ff4d4d;">+0.15%</div>
+          </div>
+          <div class="signal-row" style="margin-top:6px;">
+            <div class="signal-label">BTC Perp</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:60%; background: #e68a00;"></div>
+            </div>
+            <div class="signal-value" style="color:#e68a00;">+0.08%</div>
+          </div>
+          <div class="metric-alert" style="margin-top:10px;">
+            <div class="alert-dot"></div>
+            <div class="alert-text"><span class="red">CRITICAL:</span> SOL funding at 3-month high — overleveraged longs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CROSS-PROTOCOL -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/1749415755211296768/CntqOxat_400x400.jpg" alt="Cross-Protocol">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Cross-Protocol Correlation</div>
+            <div class="metric-badge">SYSTEMIC RISK</div>
+          </div>
+          <div class="metric-desc">When SOL, RAY, JTO, ORCA all start moving in lockstep → systemic risk rising. Low correlation = healthy market. High = crisis building.</div>
+          <div class="signal-row">
+            <div class="signal-label">Correlation</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:94%; background: #ff4d4d;"></div>
+            </div>
+            <div class="signal-value" style="color:#ff4d4d;">0.94</div>
+          </div>
+          <div class="metric-alert" style="margin-top:10px;">
+            <div class="alert-dot"></div>
+            <div class="alert-text"><span class="red">ALERT:</span> Correlation &gt; 0.90 — crisis regime probability rising</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIRDEYE -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/2007488581393317888/Q3wb2P7i_400x400.jpg" alt="Birdeye">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Birdeye</div>
+            <div class="metric-badge">MARKET DATA</div>
+          </div>
+          <div class="metric-desc">Aggregated volume, price, and token analytics across Solana DEXs. Tracks unusual volume spikes and smart money movements.</div>
+          <div class="signal-row">
+            <div class="signal-label">Volume 24h</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:78%; background: #0055ff;"></div>
+            </div>
+            <div class="signal-value" style="color:#0055ff;">$2.4B</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HELIUS -->
+      <div class="metric-card">
+        <div class="metric-logo-wrap">
+          <img src="https://pbs.twimg.com/profile_images/1676292138617675784/BNf4F9-d_400x400.jpg" alt="Helius">
+        </div>
+        <div class="metric-info">
+          <div class="metric-header">
+            <div class="metric-name">Helius</div>
+            <div class="metric-badge">ON-CHAIN DATA</div>
+          </div>
+          <div class="metric-desc">Real-time Solana on-chain data. Whale wallet movements, smart money flows, and transaction pattern analysis.</div>
+          <div class="signal-row">
+            <div class="signal-label">Whale Flow</div>
+            <div class="signal-bar-track">
+              <div class="signal-bar-fill" style="width:70%; background: #e68a00;"></div>
+            </div>
+            <div class="signal-value" style="color:#e68a00;">NET OUT</div>
+          </div>
+          <div class="metric-alert warning" style="margin-top:10px;">
+            <div class="alert-dot"></div>
+            <div class="alert-text"><span class="orange">NOTE:</span> Top 50 wallets net selling since 4h ago</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lesson-box">
+      <div class="lesson-title">◆ WHY DATA FUSION MATTERS</div>
+      <div class="lesson-text">
+        No single metric tells the full story. But when <span class="hl">funding rates spike</span> + <span class="hl">liquidity thins</span> + <span class="hl">correlations converge</span> + <span class="hl">whales exit</span> simultaneously — that's a <span class="hl">probabilistic picture</span> of an incoming crisis. Cortex triangulates all 6 streams to detect regime shifts before they become obvious.
+      </div>
+    </div>
+
+    <div class="progress">
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-bar med"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar dim"></div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-left">cortex-agent.xyz</span>
+      <span class="card-footer-right">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     CARD 3: MARKET ASYMMETRY
+     ===================================================== -->
+<div class="card">
+  <div class="card-inner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <img src="https://res.cloudinary.com/dgvnuwspr/image/upload/v1770416980/earn-sponsor/gekgs3aob9euzgqqr8cg.webp" class="cortex-logo" alt="Cortex">
+      <div class="section-label" style="margin:0;">MARKET ASYMMETRY</div>
+    </div>
+
+    <div class="section-title">Markets Climb Slow.<br>They Crash Fast.</div>
+    <div class="section-subtitle">Why regime-aware systems handle this asymmetry better than static bots</div>
+
+    <div class="asym-visual">
+      <div class="asym-chart">
+        <div class="asym-climb">
+          <div class="asym-climb-bar"></div>
+          <div class="asym-climb-label">SOL: $8 → $260<br><span style="font-size:10px;color:#777;font-weight:600;">18 months of slow markup</span></div>
+        </div>
+        <div class="asym-crash">
+          <div class="asym-crash-bar"></div>
+          <div class="asym-crash-label">-50%<br><span style="font-size:10px;color:#777;font-weight:600;">3 weeks</span></div>
+        </div>
+      </div>
+      <div class="asym-legend">
+        <div class="asym-legend-item">
+          <div class="asym-legend-dot" style="background:#00a86b;"></div>
+          <div class="asym-legend-text">Slow climb = small daily gains</div>
+        </div>
+        <div class="asym-legend-item">
+          <div class="asym-legend-dot" style="background:#ff4d4d;"></div>
+          <div class="asym-legend-text">Fast crash = concentrated losses</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-bottom:12px;">EARLY WARNING SIGNALS</div>
+    <div class="asym-signals">
+      <div class="asym-signal">
+        <div class="asym-signal-num">SIGNAL 01</div>
+        <div class="asym-signal-title">Funding Rate Spike</div>
+        <div class="asym-signal-desc">Overleveraged longs on Drift/Zeta push funding to unsustainable levels</div>
+      </div>
+      <div class="asym-signal">
+        <div class="asym-signal-num">SIGNAL 02</div>
+        <div class="asym-signal-title">Liquidity Withdrawal</div>
+        <div class="asym-signal-desc">Raydium/Orca bid depth thins as market makers pull their positions</div>
+      </div>
+      <div class="asym-signal">
+        <div class="asym-signal-num">SIGNAL 03</div>
+        <div class="asym-signal-title">Correlation Convergence</div>
+        <div class="asym-signal-desc">All Solana tokens start moving together — healthy diversity collapses</div>
+      </div>
+      <div class="asym-signal">
+        <div class="asym-signal-num">SIGNAL 04</div>
+        <div class="asym-signal-title">Smart Money Reversal</div>
+        <div class="asym-signal-desc">Helius detects whale wallets flipping from net buying to net selling</div>
+      </div>
+    </div>
+
+    <div class="lesson-box">
+      <div class="lesson-title">◆ CORTEX ADVANTAGE</div>
+      <div class="lesson-text">
+        Static bots detect crashes <span class="hl">after they happen</span> (price dropped → trigger stop-loss). Cortex detects the <span class="hl">conditions that precede crashes</span> and begins defensive positioning before the drop materializes. That's the difference between a <span class="hl">-40% drawdown</span> and a <span class="hl">-7% drawdown</span>.
+      </div>
+    </div>
+
+    <div class="progress">
+      <div class="p-dot filled"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar med"></div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-left">Detect. Adapt. Execute.</span>
+      <span class="card-footer-right">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

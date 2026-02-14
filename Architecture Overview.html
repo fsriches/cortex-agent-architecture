@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortex Multi-Agent Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: #e8e4dc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 40px 20px 60px;
+  }
+
+  /* ========== CARD BASE ========== */
+  .card {
+    width: 720px;
+    background: #f2efe8;
+    border-radius: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 40px rgba(0,0,0,0.03);
+  }
+
+  /* ========== CARD 1: HERO ========== */
+  .card-hero {
+    padding: 44px 48px 36px;
+  }
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .cortex-logo {
+    height: 36px;
+    border-radius: 8px;
+  }
+  .hero-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #0d1117;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.06);
+    padding: 6px 14px;
+    border-radius: 6px;
+  }
+
+  .hero-big {
+    font-family: 'Sora', sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    color: #0055ff;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    margin-bottom: 2px;
+  }
+  .hero-sub {
+    font-family: 'Sora', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0d1117;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .hero-inner-box {
+    margin-top: 24px;
+    background: #fff;
+    border: 2.5px solid #0055ff;
+    border-radius: 18px;
+    padding: 28px 32px;
+    position: relative;
+  }
+  .hero-inner-box::before {
+    content: '◆';
+    position: absolute;
+    top: -12px;
+    left: 28px;
+    background: #f2efe8;
+    color: #0055ff;
+    font-size: 14px;
+    padding: 0 8px;
+    font-weight: 900;
+  }
+  .hero-desc {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.75;
+    font-weight: 500;
+  }
+  .hero-desc .hl {
+    color: #0055ff;
+    font-weight: 700;
+  }
+  .hero-desc strong {
+    color: #0d1117;
+    font-weight: 700;
+  }
+
+  /* Progress bar */
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 28px;
+  }
+  .p-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 2px solid #0055ff;
+  }
+  .p-dot.filled { background: #0055ff; border-color: #0055ff; }
+  .p-bar {
+    flex: 1; height: 7px;
+    background: #0055ff;
+    border-radius: 4px;
+  }
+  .p-bar.dim { opacity: 0.15; }
+  .p-bar.med { opacity: 0.5; }
+
+  .hero-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  .hero-footer-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: #999;
+    font-weight: 400;
+  }
+  .hero-footer-handle {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: #0d1117;
+    font-weight: 700;
+  }
+
+  /* ========== CARD 2: DATA LAYER ========== */
+  .card-data {
+    padding: 44px 48px 40px;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #0055ff;
+    margin-bottom: 4px;
+  }
+  .section-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: #0d1117;
+    letter-spacing: -1px;
+    margin-bottom: 24px;
+    line-height: 1.1;
+  }
+
+  .data-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .data-item {
+    background: #fff;
+    border: 2px solid #e8e5de;
+    border-radius: 16px;
+    padding: 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .data-item:hover {
+    border-color: #0055ff;
+    transform: translateY(-2px);
+  }
+  .data-item-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  .data-item-info {}
+  .data-item-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0d1117;
+  }
+  .data-item-type {
+    font-size: 11px;
+    color: #888;
+    font-weight: 500;
+    margin-top: 1px;
+  }
+
+  /* ========== CONNECTOR ========== */
+  .connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .conn-line {
+    width: 3px;
+    height: 16px;
+    background: #0055ff;
+    opacity: 0.3;
+    border-radius: 2px;
+  }
+  .conn-arrow {
+    font-size: 16px;
+    color: #0055ff;
+    opacity: 0.5;
+    line-height: 1;
+  }
+  .conn-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: #aaa;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin: 4px 0;
+  }
+
+  /* ========== CARD 3: MRS ========== */
+  .card-mrs {
+    padding: 44px 48px 40px;
+    text-align: center;
+  }
+  .mrs-main-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    color: #0055ff;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .mrs-subtitle {
+    font-size: 14px;
+    color: #888;
+    font-weight: 500;
+    margin-bottom: 28px;
+  }
+  .regime-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .regime-pill {
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border: 2.5px solid;
+  }
+  .r-accumulation { color: #0088cc; border-color: #0088cc; background: rgba(0,136,204,0.06); }
+  .r-markup { color: #00a86b; border-color: #00a86b; background: rgba(0,168,107,0.06); }
+  .r-distribution { color: #e68a00; border-color: #e68a00; background: rgba(230,138,0,0.06); }
+  .r-markdown { color: #cc3333; border-color: #cc3333; background: rgba(204,51,51,0.06); }
+  .r-crisis { color: #fff; border-color: #8b0000; background: #8b0000; }
+
+  .mrs-explain {
+    margin-top: 24px;
+    background: #fff;
+    border: 2px solid #e8e5de;
+    border-radius: 16px;
+    padding: 20px 28px;
+    text-align: left;
+  }
+  .mrs-explain-title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #0055ff;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .mrs-explain-text {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.7;
+    font-weight: 500;
+  }
+  .mrs-explain-text .hl {
+    color: #0055ff;
+    font-weight: 700;
+  }
+
+  /* ========== CARD 4: AGENTS ========== */
+  .card-agents {
+    padding: 44px 48px 40px;
+  }
+  .agents-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .agent-box {
+    background: #fff;
+    border: 2.5px solid #e8e5de;
+    border-radius: 18px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .agent-box:hover { border-color: #0055ff; }
+  .agent-box::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 60px; height: 60px;
+    border-radius: 0 0 0 60px;
+    opacity: 0.06;
+  }
+  .agent-box.a1::after { background: #0055ff; }
+  .agent-box.a2::after { background: #00a86b; }
+  .agent-box.a3::after { background: #e68a00; }
+  .agent-box.a4::after { background: #cc3333; }
+
+  .agent-emoji {
+    font-size: 28px;
+    margin-bottom: 10px;
+  }
+  .agent-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #0d1117;
+    margin-bottom: 4px;
+  }
+  .agent-desc {
+    font-size: 12px;
+    color: #777;
+    line-height: 1.5;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .agent-best {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .a1 .agent-best { color: #0055ff; background: rgba(0,85,255,0.08); }
+  .a2 .agent-best { color: #00a86b; background: rgba(0,168,107,0.08); }
+  .a3 .agent-best { color: #e68a00; background: rgba(230,138,0,0.08); }
+  .a4 .agent-best { color: #cc3333; background: rgba(204,51,51,0.08); }
+
+  /* ========== CARD 5: ORCHESTRATION ========== */
+  .card-orch {
+    padding: 44px 48px 40px;
+  }
+  .orch-visual {
+    background: #fff;
+    border: 2.5px solid #0055ff;
+    border-radius: 18px;
+    padding: 32px;
+    margin-top: 8px;
+  }
+  .orch-scenario {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #0055ff;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .bar-chart {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 24px;
+    height: 140px;
+    padding-bottom: 8px;
+  }
+  .bar-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .bar-rect {
+    width: 64px;
+    border-radius: 8px 8px 4px 4px;
+    transition: height 0.3s;
+  }
+  .bar-label-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: #888;
+    letter-spacing: 0.5px;
+  }
+
+  .orch-compare {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .orch-compare-box {
+    flex: 1;
+    background: #f8f6f1;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .orch-compare-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .orch-compare-value {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0d1117;
+  }
+
+  /* ========== CARD 6: ADVERSARIAL ========== */
+  .card-adv {
+    padding: 44px 48px 40px;
+  }
+  .adv-row {
+    display: flex;
+    gap: 14px;
+    margin-top: 4px;
+  }
+  .adv-box {
+    flex: 1;
+    background: #fff;
+    border: 2.5px dashed #ccc;
+    border-radius: 18px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .adv-box:hover { border-color: #0055ff; }
+  .adv-box .adv-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+  }
+  .adv-box .adv-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0d1117;
+    margin-bottom: 4px;
+  }
+  .adv-box .adv-desc {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+  .adv-result {
+    margin-top: 16px;
+    background: rgba(0,85,255,0.04);
+    border: 2px solid rgba(0,85,255,0.12);
+    border-radius: 12px;
+    padding: 16px 20px;
+    text-align: center;
+  }
+  .adv-result-text {
+    font-size: 13px;
+    color: #555;
+    font-weight: 600;
+  }
+  .adv-result-text .hl {
+    color: #0055ff;
+    font-weight: 800;
+  }
+
+  /* ========== CARD 7: EXECUTION ========== */
+  .card-exec {
+    padding: 44px 48px 40px;
+  }
+  .exec-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .exec-item {
+    background: #fff;
+    border: 2.5px solid #e8e5de;
+    border-radius: 16px;
+    padding: 24px 16px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .exec-item:hover { border-color: #0055ff; transform: translateY(-2px); }
+  .exec-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+  .exec-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0d1117;
+    margin-bottom: 2px;
+  }
+  .exec-type {
+    font-size: 11px;
+    color: #999;
+    font-weight: 500;
+  }
+
+  .feedback-loop {
+    background: #fff;
+    border: 2px dashed rgba(0,85,255,0.2);
+    border-radius: 50px;
+    padding: 12px 28px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: #0055ff;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .card-footer-left {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: #aaa;
+  }
+  .card-footer-right {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: #0d1117;
+    font-weight: 700;
+  }
+
+  /* ========== CARD 8: FULL FLOW SUMMARY ========== */
+  .card-flow {
+    padding: 44px 48px 40px;
+  }
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .flow-step {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+  }
+  .flow-left {
+    width: 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .flow-num {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #0055ff;
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .flow-line {
+    flex: 1;
+    width: 3px;
+    background: linear-gradient(to bottom, #0055ff, rgba(0,85,255,0.1));
+    border-radius: 2px;
+    margin: 4px 0;
+  }
+  .flow-right {
+    flex: 1;
+    padding: 6px 0 28px;
+  }
+  .flow-step-title {
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0d1117;
+    margin-bottom: 3px;
+  }
+  .flow-step-desc {
+    font-size: 13px;
+    color: #777;
+    line-height: 1.6;
+    font-weight: 500;
+  }
+  .flow-step:last-child .flow-line { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===== CARD 1: HERO ===== -->
+<div class="card">
+  <div class="card-hero">
+    <div class="hero-top">
+      <img src="https://res.cloudinary.com/dgvnuwspr/image/upload/v1770416980/earn-sponsor/gekgs3aob9euzgqqr8cg.webp" class="cortex-logo" alt="Cortex">
+      <span class="hero-label">MULTI-AGENT SYSTEM</span>
+    </div>
+    <div class="hero-big">AUTONOMOUS</div>
+    <div class="hero-sub">DeFi Execution on Solana</div>
+    <div class="hero-inner-box">
+      <div class="hero-desc">
+        <span class="hl">4 specialist agents.</span> <strong>2 adversarial researchers.</strong> 1 execution layer.<br>
+        AI agents that <span class="hl">debate before they trade</span> — powered by Markov Regime Switching to detect market state transitions in real-time.
+      </div>
+    </div>
+    <div class="progress">
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-dot filled"></div>
+      <div class="p-dot"></div>
+      <div class="p-bar"></div>
+      <div class="p-bar med"></div>
+      <div class="p-bar dim"></div>
+    </div>
+    <div class="hero-footer">
+      <span class="hero-footer-text">Built on Solana.</span>
+      <span class="hero-footer-handle">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CARD 2: DATA LAYER ===== -->
+<div class="card">
+  <div class="card-data">
+    <div class="section-label">PHASE 01</div>
+    <div class="section-title">Real-Time<br>Data Fusion</div>
+    <div class="data-grid">
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/1948404937857122304/XPBCFnR5_400x400.jpg" class="data-item-logo" alt="Pyth">
+        <div class="data-item-info">
+          <div class="data-item-name">Pyth Oracle</div>
+          <div class="data-item-type">Price Feeds</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/2007488581393317888/Q3wb2P7i_400x400.jpg" class="data-item-logo" alt="Birdeye">
+        <div class="data-item-info">
+          <div class="data-item-name">Birdeye</div>
+          <div class="data-item-type">Market Data</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/1676292138617675784/BNf4F9-d_400x400.jpg" class="data-item-logo" alt="Helius">
+        <div class="data-item-info">
+          <div class="data-item-name">Helius</div>
+          <div class="data-item-type">On-Chain Data</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/1965997401015267328/28CKEI7e_400x400.jpg" class="data-item-logo" alt="Raydium">
+        <div class="data-item-info">
+          <div class="data-item-name">Raydium</div>
+          <div class="data-item-type">Liquidity Depth</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/1996562092879663104/5W5GGU9U_400x400.png" class="data-item-logo" alt="Drift">
+        <div class="data-item-info">
+          <div class="data-item-name">Drift</div>
+          <div class="data-item-type">Funding Rates</div>
+        </div>
+      </div>
+      <div class="data-item">
+        <img src="https://pbs.twimg.com/profile_images/1749415755211296768/CntqOxat_400x400.jpg" class="data-item-logo" alt="Cross-Protocol">
+        <div class="data-item-info">
+          <div class="data-item-name">Cross-Protocol</div>
+          <div class="data-item-type">Correlation Monitor</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTOR -->
+<div class="connector">
+  <div class="conn-line"></div>
+  <div class="conn-label">feeds into</div>
+  <div class="conn-arrow">▼</div>
+</div>
+
+<!-- ===== CARD 3: MRS ===== -->
+<div class="card">
+  <div class="card-mrs">
+    <div class="section-label">PHASE 02</div>
+    <div class="mrs-main-title">MARKOV REGIME<br>SWITCHING</div>
+    <div class="mrs-subtitle">Probabilistic detection of current market state + transition probabilities</div>
+    <div class="regime-row">
+      <div class="regime-pill r-accumulation">Accumulation</div>
+      <div class="regime-pill r-markup">Markup</div>
+      <div class="regime-pill r-distribution">Distribution</div>
+      <div class="regime-pill r-markdown">Markdown</div>
+      <div class="regime-pill r-crisis">CRISIS</div>
+    </div>
+    <div class="mrs-explain">
+      <div class="mrs-explain-title">◆ Proactive vs Reactive</div>
+      <div class="mrs-explain-text">
+        Static bots use thresholds: <em>"if RSI &lt; 30, buy."</em><br>
+        Cortex uses <span class="hl">probabilities</span>: <em>"73% chance we're transitioning from distribution → markdown. Begin defensive reallocation."</em>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTOR -->
+<div class="connector">
+  <div class="conn-line"></div>
+  <div class="conn-label">activates</div>
+  <div class="conn-arrow">▼</div>
+</div>
+
+<!-- ===== CARD 4: AGENTS ===== -->
+<div class="card">
+  <div class="card-agents">
+    <div class="section-label">PHASE 03</div>
+    <div class="section-title">Specialist Agents</div>
+    <div class="agents-grid">
+      <div class="agent-box a1">
+        <div class="agent-emoji">⚡</div>
+        <div class="agent-name">Momentum</div>
+        <div class="agent-desc">Captures trending moves. Rides breakouts during strong directional markets.</div>
+        <div class="agent-best">Best in: Markup</div>
+      </div>
+      <div class="agent-box a2">
+        <div class="agent-emoji">↔️</div>
+        <div class="agent-name">Mean-Reversion</div>
+        <div class="agent-desc">Profits from range-bound oscillations. Buys dips, sells rips in sideways markets.</div>
+        <div class="agent-best">Best in: Accumulation</div>
+      </div>
+      <div class="agent-box a3">
+        <div class="agent-emoji">💧</div>
+        <div class="agent-name">Liquidity Provision</div>
+        <div class="agent-desc">Earns spread by providing depth. Optimal when volatility is low and predictable.</div>
+        <div class="agent-best">Best in: Low Volatility</div>
+      </div>
+      <div class="agent-box a4">
+        <div class="agent-emoji">⇄</div>
+        <div class="agent-name">Arbitrage</div>
+        <div class="agent-desc">Exploits cross-DEX price discrepancies. Thrives when markets are chaotic.</div>
+        <div class="agent-best">Best in: Crisis / High Vol</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTOR -->
+<div class="connector">
+  <div class="conn-line"></div>
+  <div class="conn-label">proposals debated by</div>
+  <div class="conn-arrow">▼</div>
+</div>
+
+<!-- ===== CARD 5: ADVERSARIAL ===== -->
+<div class="card">
+  <div class="card-adv">
+    <div class="section-label">PHASE 04</div>
+    <div class="section-title">Adversarial Validation</div>
+    <div class="adv-row">
+      <div class="adv-box">
+        <div class="adv-icon">🔍</div>
+        <div class="adv-name">Researcher Alpha</div>
+        <div class="adv-desc">Challenges the trade thesis. Finds flaws in agent proposals.</div>
+      </div>
+      <div class="adv-box">
+        <div class="adv-icon">⚖️</div>
+        <div class="adv-name">Researcher Beta</div>
+        <div class="adv-desc">Counter-argues and stress tests every assumption before execution.</div>
+      </div>
+    </div>
+    <div class="adv-result">
+      <div class="adv-result-text">Only trades that survive <span class="hl">adversarial debate</span> get executed → fewer false signals, better risk management</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTOR -->
+<div class="connector">
+  <div class="conn-line"></div>
+  <div class="conn-label">validated signals to</div>
+  <div class="conn-arrow">▼</div>
+</div>
+
+<!-- ===== CARD 6: ORCHESTRATION ===== -->
+<div class="card">
+  <div class="card-orch">
+    <div class="section-label">PHASE 05</div>
+    <div class="section-title">Dynamic Orchestration</div>
+    <div class="orch-visual">
+      <div class="orch-scenario">◆ EXAMPLE: MARKUP REGIME DETECTED</div>
+      <div class="bar-chart">
+        <div class="bar-group">
+          <div class="bar-value" style="color: #0055ff;">40%</div>
+          <div class="bar-rect" style="height: 100px; background: linear-gradient(to top, rgba(0,85,255,0.15), #0055ff);"></div>
+          <div class="bar-label-text">Momentum</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-value" style="color: #00a86b;">25%</div>
+          <div class="bar-rect" style="height: 62px; background: linear-gradient(to top, rgba(0,168,107,0.15), #00a86b);"></div>
+          <div class="bar-label-text">Mean-Rev</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-value" style="color: #e68a00;">20%</div>
+          <div class="bar-rect" style="height: 50px; background: linear-gradient(to top, rgba(230,138,0,0.15), #e68a00);"></div>
+          <div class="bar-label-text">LP</div>
+        </div>
+        <div class="bar-group">
+          <div class="bar-value" style="color: #cc3333;">15%</div>
+          <div class="bar-rect" style="height: 38px; background: linear-gradient(to top, rgba(204,51,51,0.15), #cc3333);"></div>
+          <div class="bar-label-text">Arbitrage</div>
+        </div>
+      </div>
+      <div class="orch-compare">
+        <div class="orch-compare-box">
+          <div class="orch-compare-label">In Markup</div>
+          <div class="orch-compare-value">Momentum 40% ↑</div>
+        </div>
+        <div class="orch-compare-box">
+          <div class="orch-compare-label">In Crisis</div>
+          <div class="orch-compare-value">Arbitrage 60% ↑</div>
+        </div>
+        <div class="orch-compare-box">
+          <div class="orch-compare-label">In Sideways</div>
+          <div class="orch-compare-value">Mean-Rev 45% ↑</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONNECTOR -->
+<div class="connector">
+  <div class="conn-line"></div>
+  <div class="conn-label">executes on</div>
+  <div class="conn-arrow">▼</div>
+</div>
+
+<!-- ===== CARD 7: EXECUTION ===== -->
+<div class="card">
+  <div class="card-exec">
+    <div class="section-label">PHASE 06</div>
+    <div class="section-title">Execution Layer</div>
+    <div class="exec-grid">
+      <div class="exec-item">
+        <img src="https://pbs.twimg.com/profile_images/1965997401015267328/28CKEI7e_400x400.jpg" class="exec-logo" alt="Raydium">
+        <div class="exec-name">Raydium</div>
+        <div class="exec-type">AMM / CLMM Pools</div>
+      </div>
+      <div class="exec-item">
+        <img src="https://pbs.twimg.com/profile_images/2001142048788025345/oajp6pE2_400x400.jpg" class="exec-logo" alt="Orca">
+        <div class="exec-name">Orca</div>
+        <div class="exec-type">Whirlpools</div>
+      </div>
+      <div class="exec-item">
+        <img src="https://pbs.twimg.com/profile_images/1944921381168099328/mVkHxhxy_400x400.jpg" class="exec-logo" alt="Jupiter">
+        <div class="exec-name">Jupiter</div>
+        <div class="exec-type">Aggregated Routing</div>
+      </div>
+    </div>
+    <div class="feedback-loop">↻ CONTINUOUS FEEDBACK LOOP — RESULTS FEED BACK TO DATA LAYER</div>
+    <div class="card-footer">
+      <span class="card-footer-left">cortex-agent.xyz</span>
+      <span class="card-footer-right">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CARD 8: FULL FLOW SUMMARY ===== -->
+<div class="card">
+  <div class="card-flow">
+    <div class="section-label">COMPLETE FLOW</div>
+    <div class="section-title">How Cortex Works</div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">1</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Data Ingestion</div>
+          <div class="flow-step-desc">Pyth, Birdeye, Helius, Raydium/Orca depth, Drift funding rates, cross-protocol correlation — updated every second.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">2</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Regime Detection (MRS)</div>
+          <div class="flow-step-desc">Markov Regime Switching identifies current market state and calculates transition probabilities across 5 regimes.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">3</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Agent Activation</div>
+          <div class="flow-step-desc">4 specialist agents (momentum, mean-reversion, LP, arbitrage) generate trade proposals with regime-conditional parameters.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">4</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Adversarial Debate</div>
+          <div class="flow-step-desc">2 adversarial researchers challenge every thesis. Only validated signals survive to execution.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">5</div>
+          <div class="flow-line"></div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Orchestration</div>
+          <div class="flow-step-desc">Capital weights dynamically adjusted per agent based on regime probabilities. Risk limits auto-tighten in crisis mode.</div>
+        </div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-left">
+          <div class="flow-num">6</div>
+        </div>
+        <div class="flow-right">
+          <div class="flow-step-title">Execution</div>
+          <div class="flow-step-desc">Sub-second trades across Raydium, Orca, Jupiter. Results feed back into the data layer. 24/7. Autonomous.</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 28px;">
+      <div class="progress">
+        <div class="p-dot filled"></div>
+        <div class="p-dot"></div>
+        <div class="p-dot filled"></div>
+        <div class="p-dot"></div>
+        <div class="p-dot filled"></div>
+        <div class="p-bar"></div>
+        <div class="p-bar"></div>
+        <div class="p-bar med"></div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="card-footer-left">Detect. Adapt. Execute.</span>
+      <span class="card-footer-right">@dianalfyu</span>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
